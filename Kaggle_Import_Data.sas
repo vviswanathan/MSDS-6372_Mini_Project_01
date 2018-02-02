@@ -34,6 +34,7 @@ SalePrice = .;
 
 data train2;
  set train test;
+ if ID = 1299 then delete;
 run;
 proc print data = train2;
 run;

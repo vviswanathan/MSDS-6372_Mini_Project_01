@@ -9,18 +9,20 @@ run;
 
 proc print data= test_ols;
 
+proc sgscatter data = train2;
+matrix MSSubClass LotArea OverallQual OverallCond;
+matrix YearBuilt MasVnrArea BsmtFinSF1 GrLivArea;
+matrix BsmtFullBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd;
+matrix GarageYrBlt GarageCars WoodDeckSF ScreenPorch;
+run;
 
-*Class MSZoning Street Alley LotShape LandContour Utilities LotConfig LandSlope Neighborhood Condition1 
-	Condition2 BldgType HouseStyle RoofStyle RoofMatl Exterior1st Exterior2nd MasVnrType ExterQual ExterCond 
-	Foundation BsmtQual BsmtCond BsmtExposure BsmtFinType1 BsmtFinType2 Heating HeatingQC CentralAir Electrical 
-	KitchenQual Functional FireplaceQu GarageType GarageFinish GarageQual GarageCond PavedDrive PoolQC Fence 
-	MiscFeature SaleType SaleCondition;
-*Model SalePrice = Id MSSubClass MSZoning LotFrontage LotArea Street Alley LotShape LandContour Utilities 
-	LotConfig LandSlope Neighborhood Condition1 Condition2 BldgType HouseStyle OverallQual OverallCond 
-	YearBuilt YearRemodAdd RoofStyle RoofMatl Exterior1st Exterior2nd MasVnrType MasVnrArea ExterQual 
-	ExterCond Foundation BsmtQual BsmtCond BsmtExposure BsmtFinType1 BsmtFinSF1 BsmtFinType2 BsmtFinSF2 
-	BsmtUnfSF TotalBsmtSF Heating HeatingQC CentralAir Electrical FrstFlrSF ScndFlrSF LowQualFinSF GrLivArea 
-	BsmtFullBath BsmtHalfBath FullBath HalfBath BedroomAbvGr KitchenAbvGr KitchenQual TotRmsAbvGrd Functional 
-	Fireplaces FireplaceQu GarageType GarageYrBlt GarageFinish GarageCars GarageArea GarageQual GarageCond 
-	PavedDrive WoodDeckSF OpenPorchSF EnclosedPorch tSsnPorch ScreenPorch PoolArea PoolQC Fence MiscFeature 
-	MiscVal MoSold YrSold SaleType SaleCondition / selection = Lasso (choose = cv stop = cv ) CVDETAILS;
+ods graphics on;
+proc reg data=train2 outest=TrainResultsOLS plots(label)=(rstudentbyleverage cooksd);
+model SalePrice = MSSubClass LotArea OverallQual OverallCond 
+					YearBuilt MasVnrArea BsmtFinSF1 GrLivArea 
+					BsmtFullBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd 
+					GarageYrBlt GarageCars WoodDeckSF ScreenPorch
+					/ partial AIC VIF CLI;
+run;
+quit;
+ods graphics off;
