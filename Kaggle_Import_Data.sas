@@ -10,8 +10,8 @@ input Id MSSubClass MSZoning $ LotFrontage LotArea Street $ /*Alley $ */LotShape
 	GarageType $ GarageYrBlt GarageFinish $ GarageCars GarageArea GarageQual $ GarageCond $ PavedDrive $ WoodDeckSF OpenPorchSF EnclosedPorch 
 	tSsnPorch ScreenPorch PoolArea /*PoolQC $ Fence $ MiscFeature $ */MiscVal MoSold YrSold SaleType $ SaleCondition $ SalePrice;
 run;
-proc print data = train;
-run;
+*proc print data = train;
+*run;
 
 data test;
 *infile "C:\Vivek\Data_Science\MSDS-6372-Stats-II\Week-06_Project\test.csv" dlm="," firstobs=2;
@@ -26,7 +26,7 @@ input Id MSSubClass MSZoning $ LotFrontage LotArea Street $ Alley $ LotShape $ L
 	tSsnPorch ScreenPorch PoolArea PoolQC $ Fence $ MiscFeature $ MiscVal MoSold YrSold SaleType $ SaleCondition $ ;
 run;
 *proc print data = test;
-run;
+*run;
 
 /* This code assumes that the training and test sets have been imported.  They have been called �train� and �test� respectively � the final data set we would like you to export and submit to Kaggle is called results2 � Whamo! 
 At this point the train and test sets have been preprocessed so that there is no cleaning or manipulation of the data done with SAS code here.  */
@@ -41,19 +41,19 @@ SalePrice = .;
 data train2;
  set train test;
  if ID = 1299 then delete;
- ScndFlrSF = log(ScndFlrSF);
- FrstFlrSF = log(FrstFlrSF);
- GrLivArea = log(GrLivArea);
- OpenPorchSF= log(OpenPorchSF);
- SalePrice = log(SalePrice);
+ ScndFlrSFLog = log(ScndFlrSF);
+ FrstFlrSFLog = log(FrstFlrSF);
+ GrLivAreaLog = log(GrLivArea);
+ OpenPorchSFLog = log(OpenPorchSF);
+ SalePriceLog = log(SalePrice);
   
 ;
 
 *Review varibles to see if they need tranformation;
-Proc univariate data=train2 plots normaltest ;
+Proc univariate data=train2 plots normaltest   ;
 qqplot;
 Run;
 
 *proc print data = train2;
-run;
+*run;
 

@@ -4,9 +4,6 @@ Class MSSubClass MSZoning Street LotShape LandContour Utilities LotConfig LandSl
 RoofStyle RoofMatl Exterior1st Exterior2nd MasVnrType ExterQual ExterCond Foundation BsmtQual BsmtCond BsmtExposure BsmtFinType1 BsmtFinType2 
 Heating HeatingQC CentralAir Electrical KitchenQual Functional GarageType GarageFinish GarageQual GarageCond PavedDrive SaleType SaleCondition;
 
-
-
-
 Model SalePrice = Id MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
 	BsmtFinSF1 BsmtFinSF2 BsmtUnfSF TotalBsmtSF FrstFlrSF ScndFlrSF LowQualFinSF GrLivArea BsmtFullBath 
 	BsmtHalfBath FullBath HalfBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd Fireplaces GarageYrBlt GarageCars 
@@ -15,6 +12,31 @@ Model SalePrice = Id MSSubClass LotFrontage LotArea OverallQual OverallCond Year
 Modelaverage nsamples= 1000 samplingmethod = URS(percent=100);
 output out= test_lso_ma p= pred r= ress ;
 run;
+
+
+*Model with log varibles ;
+
+
+Proc GLmselect data=train2  seed=2 plots(stepAxis=number)=(criterionPanel ASEPlot);
+Class MSSubClass MSZoning Street LotShape LandContour Utilities LotConfig LandSlope Neighborhood Condition1 Condition2 BldgType HouseStyle OverallQual OverallCond 
+RoofStyle RoofMatl Exterior1st Exterior2nd MasVnrType ExterQual ExterCond Foundation BsmtQual BsmtCond BsmtExposure BsmtFinType1 BsmtFinType2 
+Heating HeatingQC CentralAir Electrical KitchenQual Functional GarageType GarageFinish GarageQual GarageCond PavedDrive SaleType SaleCondition;
+
+Model SalePricelog = Id MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
+	BsmtFinSF1 BsmtFinSF2 BsmtUnfSF TotalBsmtSF FrstFlrSF ScndFlrSF LowQualFinSF GrLivArea BsmtFullBath 
+	BsmtHalfBath FullBath HalfBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd Fireplaces GarageYrBlt GarageCars 
+	GarageArea WoodDeckSF OpenPorchSF EnclosedPorch tSsnPorch ScreenPorch PoolArea MiscVal MoSold YrSold 
+
+	/ selection = Lasso (choose = cv stop = aic ) CVDETAILS;
+Modelaverage nsamples= 1000 samplingmethod = URS(percent=100);
+output out= test_lso_ma p= pred r= ress ;
+run;
+
+*did not return any log varibles 
+Model SalePriceLog = Id MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
+	BsmtFinSF1 BsmtFinSF2 BsmtUnfSF TotalBsmtSF FrstFlrSFLog ScndFlrSFLog LowQualFinSF GrLivAreaLog BsmtFullBath 
+	BsmtHalfBath FullBath HalfBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd Fireplaces GarageYrBlt GarageCars 
+	GarageArea WoodDeckSF OpenPorchSFLog EnclosedPorch tSsnPorch ScreenPorch PoolArea MiscVal MoSold YrSold
 
 *proc print data= test_lso_ma;
 
