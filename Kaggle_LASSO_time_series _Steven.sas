@@ -5,8 +5,8 @@
 
 
 proc autoreg data = train2 plots=all;
-model SalePricelog =  MSSubClass LotArea OverallQual OverallCond YearBuilt YearRemodAdd BsmtFinSF1 TotalBsmtSF 
-		GrLivArea BsmtFullBath KitchenAbvGr Fireplaces GarageCars WoodDeckSF ScreenPorch / dwprob ;
+model SalePricelog =   MSSubClass LotArea OverallQual OverallCond YearBuilt YearRemodAdd
+		 GrLivArea BsmtFullBath TotalBsmtSF KitchenAbvGr Fireplaces GarageCars WoodDeckSF ScreenPorch / dwprob  ;
 output out = test_auto_reg rm = residualsOLS r = residualsLag1 p= yhat  lcl= LCL ucl= UCL pm= trend;
 run;
 

@@ -1,11 +1,12 @@
 
+*Not complex;
 Proc GLmselect data=train2  seed=2 plots(stepAxis=number)=(criterionPanel ASEPlot) ;
 Class  MSZoning Street LotShape LandContour Utilities LotConfig LandSlope Neighborhood Condition1 Condition2 BldgType HouseStyle   
 RoofStyle RoofMatl Exterior1st Exterior2nd MasVnrType ExterQual ExterCond Foundation BsmtQual BsmtCond BsmtExposure BsmtFinType1 BsmtFinType2 
 Heating HeatingQC CentralAir Electrical KitchenQual Functional GarageType GarageFinish GarageQual GarageCond PavedDrive SaleType SaleCondition;
 
-Model SalePriceLog = Id MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
-	BsmtFinSF1 BsmtFinSF2 BsmtUnfSF TotalBsmtSF FrstFlrSF ScndFlrSF LowQualFinSF GrLivArea BsmtFullBath 
+Model SalePriceLog =  MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
+	 LowQualFinSF GrLivArea BsmtFullBath TotalBsmtSF
 	BsmtHalfBath FullBath HalfBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd Fireplaces GarageYrBlt GarageCars 
     WoodDeckSF OpenPorchSF EnclosedPorch tSsnPorch ScreenPorch PoolArea MiscVal MoSold YrSold 
 	/ selection = Lasso (choose = cv stop = aic ) CVDETAILS ;
@@ -28,18 +29,18 @@ where id > 1460;
 proc export data=Results outfile='/home/skhayden0/sasuser.v94/Stats 2/Project 1/Results.csv' dbms=csv Replace;
 run;
 
-*Model with log varibles ;
+*Model with log varibles and complex ;
 
 
 Proc GLmselect data=train2  seed=2 plots(stepAxis=number)=(criterionPanel ASEPlot);
-Class MSSubClass MSZoning Street LotShape LandContour Utilities LotConfig LandSlope Neighborhood Condition1 Condition2 BldgType HouseStyle OverallQual OverallCond 
+Class MSZoning Street LotShape LandContour Utilities LotConfig LandSlope Neighborhood Condition1 Condition2 BldgType HouseStyle   
 RoofStyle RoofMatl Exterior1st Exterior2nd MasVnrType ExterQual ExterCond Foundation BsmtQual BsmtCond BsmtExposure BsmtFinType1 BsmtFinType2 
 Heating HeatingQC CentralAir Electrical KitchenQual Functional GarageType GarageFinish GarageQual GarageCond PavedDrive SaleType SaleCondition;
 
-Model SalePricelog = Id MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
-	BsmtFinSF1 BsmtFinSF2 BsmtUnfSF TotalBsmtSF FrstFlrSF ScndFlrSF LowQualFinSF GrLivArea BsmtFullBath 
+Model SalePricelog = MSSubClass LotFrontage LotArea OverallQual OverallCond YearBuilt YearRemodAdd MasVnrArea 
+	BsmtFinSF1 BsmtFinSF2 BsmtUnfSF  FrstFlrSF ScndFlrSF LowQualFinSF  BsmtFullBath 
 	BsmtHalfBath FullBath HalfBath BedroomAbvGr KitchenAbvGr TotRmsAbvGrd Fireplaces GarageYrBlt GarageCars 
-	GarageArea WoodDeckSF OpenPorchSF EnclosedPorch tSsnPorch ScreenPorch PoolArea MiscVal MoSold YrSold 
+	 WoodDeckSF OpenPorchSF EnclosedPorch tSsnPorch ScreenPorch PoolArea MiscVal MoSold YrSold 
 
 	/ selection = Lasso (choose = cv stop = aic ) CVDETAILS;
 Modelaverage nsamples= 1000 samplingmethod = URS(percent=100);
@@ -60,10 +61,22 @@ matrix MasVnrArea BsmtFinSF1 TotalBsmtSF FrstFlrSF GrLivArea;
 matrix KitchenAbvGr Fireplaces GarageCars GarageArea WoodDeckSF;
 run;
 
-*Changed to OLS using the highest selected model from model avg
+
+*Changed to OLS using the highest selected model from model avg in the more complext model avg;
 proc reg data=train2 outest=TrainResultsLSO_ma plots(label)=(rstudentbyleverage cooksd);
-model SalePricelog =  MSSubClass LotArea OverallQual OverallCond YearBuilt YearRemodAdd BsmtFinSF1 TotalBsmtSF 
-		GrLivArea BsmtFullBath KitchenAbvGr Fireplaces GarageCars WoodDeckSF ScreenPorch
+model SalePricelog =  MSSubClass LotArea OverallQual OverallCond YearBuilt 
+			YearRemodAdd BsmtFinSF1 FrstFlrSF ScndFlrSF BsmtFullBath FullBath 
+			HalfBath KitchenAbvGr TotRmsAbvGrd Fireplaces GarageCars WoodDeckSF ScreenPorch
+		/ partial AIC VIF CLI;
+		output out= test_lso_ma_OLS  p = yhat;
+run;
+
+
+
+*Changed to OLS using the highest selected model from model avg;
+proc reg data=train2 outest=TrainResultsLSO_ma plots(label)=(rstudentbyleverage cooksd);
+model SalePricelog =  MSSubClass LotArea OverallQual OverallCond YearBuilt YearRemodAdd
+		 GrLivArea BsmtFullBath TotalBsmtSF KitchenAbvGr Fireplaces GarageCars WoodDeckSF ScreenPorch
 		/ partial AIC VIF CLI;
 		output out= test_lso_ma_OLS  p = yhat;
 run;
